@@ -79,26 +79,26 @@ class _ResultScreenState extends State<ResultScreen> {
                   padding: const EdgeInsets.all(20.0),
                   child: Column(
                     children: [
-                      Icon(
-                        caught ? Icons.gavel : Icons.directions_run,
-                        size: 80,
-                        color: caught ? Colors.green : Colors.red,
-                      ),
-                      const SizedBox(height: 20),
-                      Text(
-                        caught
-                            ? "${lang.t("lost")} ${lang.t("the_imposter")}"
-                            : "${lang.t("win")} ${lang.t("the_imposter")}",
-                        style: const TextStyle(
-                          fontSize: 32,
-                          fontWeight: FontWeight.bold,
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 40.0),
+                        child: SizedBox(
+                          width: double.infinity,
+                          height: 55,
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.deepPurple,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(15),
+                              ),
+                            ),
+                            onPressed: () => _playAgain(context),
+                            child: Text(
+                              lang.t('play_again'),
+                              style: TextStyle(color: Colors.white, fontSize: 18),
+                            ),
+                          ),
                         ),
-                        textAlign: TextAlign.center,
                       ),
-                      const SizedBox(height: 20),
-                      Text(
-                        "${lang.t("the_imposter_was")}:",
-                        style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w600,
                         ),

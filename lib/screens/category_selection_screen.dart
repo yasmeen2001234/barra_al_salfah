@@ -190,13 +190,19 @@ class _CategorySelectionScreenState extends State<CategorySelectionScreen> {
                         child: Icon(icon, size: 28, color: color),
                       ),
                       const SizedBox(height: 12),
-                      Text(name, textAlign: TextAlign.center),
+                      Text(
+                        name,
+                        textAlign: TextAlign.center,
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
                       const SizedBox(height: 6),
                       Text(
-                        '$wordCount words',
-                        style: const TextStyle(
+                        '$wordCount كلمة',
+                        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.onSurface.withOpacity(0.6),
                           fontSize: 12,
-                          color: Colors.grey,
                         ),
                       ),
                     ],

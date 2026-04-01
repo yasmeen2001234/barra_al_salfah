@@ -348,7 +348,9 @@ class _CategoryEditorScreenState extends State<CategoryEditorScreen> {
                           children: [
                             TextSpan(
                               text: '${lang.t('words_in')} "',
-                              style: const TextStyle(color: Colors.black),
+                              style: TextStyle(
+                                color: Theme.of(context).colorScheme.onSurface,
+                              ),
                             ),
                             TextSpan(
                               text: selectedCategory ?? '',
@@ -357,9 +359,11 @@ class _CategoryEditorScreenState extends State<CategoryEditorScreen> {
                                 color: Colors.red,
                               ),
                             ),
-                            const TextSpan(
+                            TextSpan(
                               text: '"',
-                              style: TextStyle(color: Colors.black),
+                              style: TextStyle(
+                                color: Theme.of(context).colorScheme.onSurface,
+                              ),
                             ),
                           ],
                         ),
