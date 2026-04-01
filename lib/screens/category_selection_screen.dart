@@ -30,7 +30,7 @@ class _CategorySelectionScreenState extends State<CategorySelectionScreen> {
 
   IconData getMaterialIcon(String name) {
     switch (name) {
-      case "fastfood":
+      case "food":
         return Icons.fastfood;
       case "place":
         return Icons.place;
