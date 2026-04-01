@@ -49,6 +49,14 @@ class _ResultScreenState extends State<ResultScreen> {
     return options;
   }
 
+  void _playAgain() {
+    final game = Provider.of<GameProvider>(context, listen: false);
+    game.reset(); // Make sure your GameProvider has a reset() method
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(builder: (context) => const HomeScreen()),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final game = Provider.of<GameProvider>(context);
@@ -80,7 +88,10 @@ class _ResultScreenState extends State<ResultScreen> {
                   child: Column(
                     children: [
                       Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 40.0),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 20.0,
+                          vertical: 40.0,
+                        ),
                         child: SizedBox(
                           width: double.infinity,
                           height: 55,
@@ -91,16 +102,15 @@ class _ResultScreenState extends State<ResultScreen> {
                                 borderRadius: BorderRadius.circular(15),
                               ),
                             ),
-                            onPressed: () => _playAgain(context),
+                            onPressed: () => _playAgain(),
                             child: Text(
                               lang.t('play_again'),
-                              style: TextStyle(color: Colors.white, fontSize: 18),
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 18,
+                              ),
                             ),
                           ),
-                        ),
-                      ),
-                          fontSize: 18,
-                          fontWeight: FontWeight.w600,
                         ),
                       ),
                       const SizedBox(height: 10),
