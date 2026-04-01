@@ -16,26 +16,18 @@ class CategorySelectionScreen extends StatefulWidget {
 
 class _CategorySelectionScreenState extends State<CategorySelectionScreen> {
   final ScrollController _gridScrollController = ScrollController();
-  // Map<String, List<String>> categories = {};
   Map<String, dynamic> categories = {};
   bool loading = true;
   List<String> deletedCategories = [];
 
-  String currentLang = "en"; // or "ar" for Arabic
-
-  // --- Helper to convert hex color to Color ---
   Color hexToColor(String hex) {
     hex = hex.trim();
-    if (hex.startsWith('0x')) {
-      // Already in 0xAARRGGBB format
-      return Color(int.parse(hex));
-    }
+    if (hex.startsWith('0x')) return Color(int.parse(hex));
     hex = hex.replaceAll('#', '');
-    if (hex.length == 6) hex = 'FF$hex'; // add alpha if missing
+    if (hex.length == 6) hex = 'FF$hex';
     return Color(int.parse('0x$hex'));
   }
 
-  // --- Helper to convert icon name string to IconData ---
   IconData getMaterialIcon(String name) {
     switch (name) {
       case "fastfood":
@@ -87,7 +79,6 @@ class _CategorySelectionScreenState extends State<CategorySelectionScreen> {
         : {};
     deletedCategories = List<String>.from(custom['__deleted__'] ?? []);
 
-    // Show all asset categories not deleted, merged with custom overrides if present
     final String response = await rootBundle.loadString(
       'assets/categories.json',
     );
@@ -95,21 +86,17 @@ class _CategorySelectionScreenState extends State<CategorySelectionScreen> {
       json.decode(response) as Map,
     );
     final Map<String, dynamic> merged = {};
+
     asset.forEach((k, v) {
       if (!deletedCategories.contains(k)) {
-        if (custom.containsKey(k)) {
-          merged[k] = custom[k];
-        } else {
-          merged[k] = v;
-        }
+        merged[k] = custom.containsKey(k) ? custom[k] : v;
       }
     });
-    // Add any purely custom categories (not deleted)
+
     custom.forEach((k, v) {
-      if (!asset.containsKey(k) && k != '__deleted__') {
-        merged[k] = v;
-      }
+      if (!asset.containsKey(k) && k != '__deleted__') merged[k] = v;
     });
+
     setState(() {
       categories = merged;
       loading = false;
@@ -130,105 +117,113 @@ class _CategorySelectionScreenState extends State<CategorySelectionScreen> {
         title: Text(lang.t('choose_category')),
         automaticallyImplyLeading: true,
       ),
-      body: Column(
-        children: [
-          Expanded(
-            child: Scrollbar(
-              thumbVisibility: true,
+      body: Scrollbar(
+        thumbVisibility: true,
+        controller: _gridScrollController,
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            double width = constraints.maxWidth;
+
+            // Logic for column count
+            int crossAxisCount = width < 350 ? 2 : (width < 600 ? 3 : 4);
+            double spacing = width < 400 ? 12 : 16;
+
+            return GridView.builder(
               controller: _gridScrollController,
-              child: LayoutBuilder(
-                builder: (context, constraints) {
-                  int crossAxisCount = 4;
-                  double width = constraints.maxWidth;
-                  if (width < 400) {
-                    crossAxisCount = 2;
-                  } else if (width < 600) {
-                    crossAxisCount = 3;
-                  }
-                  double spacing = width < 400 ? 16 : 20;
-                  return GridView.builder(
-                    controller: _gridScrollController,
-                    padding: EdgeInsets.all(spacing),
-                    itemCount: names.length,
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: crossAxisCount,
-                      crossAxisSpacing: spacing,
-                      mainAxisSpacing: spacing,
-                      childAspectRatio: 1.1,
-                    ),
-                    itemBuilder: (context, i) {
-                      final name = names[i];
-                      final cat = categories[name];
-                      final colorValue = cat["color"];
-                      Color color;
-                      if (colorValue is int) {
-                        color = Color(colorValue);
-                      } else if (colorValue is String) {
-                        color = hexToColor(colorValue);
-                      } else {
-                        color = Colors.grey;
-                      }
-                      final icon = getMaterialIcon(cat["icon"]);
-                      int wordCount = 0;
-                      if (cat is Map && cat['ar'] is List) {
-                        wordCount = (cat['ar'] as List).length;
-                      }
-                      return InkWell(
-                        borderRadius: BorderRadius.circular(16),
-                        onTap: () {
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) =>
-                                  PlayerSetupScreen(selectedCategory: name),
-                            ),
-                          );
-                        },
-                        child: Card(
-                          elevation: 4,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(12),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                CircleAvatar(
-                                  radius: 28,
-                                  backgroundColor: color.withOpacity(0.2),
-                                  child: Icon(icon, size: 28, color: color),
-                                ),
-                                const SizedBox(height: 12),
-                                Text(
-                                  name,
-                                  textAlign: TextAlign.center,
-                                  style: Theme.of(context).textTheme.bodyMedium,
-                                ),
-                                const SizedBox(height: 6),
-                                Text(
-                                  '$wordCount كلمة',
-                                  style: Theme.of(context).textTheme.labelSmall
-                                      ?.copyWith(
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .onSurface
-                                            .withOpacity(0.6),
-                                        fontSize: 12,
-                                      ),
-                                ),
-                              ],
-                            ),
-                          ),
+              padding: EdgeInsets.all(spacing),
+              itemCount: names.length,
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: crossAxisCount,
+                crossAxisSpacing: spacing,
+                mainAxisSpacing: spacing,
+                // FIX: Use a taller ratio by default to prevent overflow
+                childAspectRatio: 0.85,
+              ),
+              itemBuilder: (context, i) {
+                final name = names[i];
+                final cat = categories[name];
+
+                Color color = Colors.grey;
+                if (cat["color"] is int)
+                  color = Color(cat["color"]);
+                else if (cat["color"] is String)
+                  color = hexToColor(cat["color"]);
+
+                final icon = getMaterialIcon(cat["icon"]);
+                int wordCount = (cat is Map && cat['ar'] is List)
+                    ? (cat['ar'] as List).length
+                    : 0;
+
+                return Card(
+                  elevation: 3,
+                  clipBehavior: Clip.antiAlias,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: InkWell(
+                    onTap: () {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) =>
+                              PlayerSetupScreen(selectedCategory: name),
                         ),
                       );
                     },
-                  );
-                },
-              ),
-            ),
-          ),
-        ],
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          // 1. Icon area: Uses Expanded so it takes
+                          // available space but shrinks if text is long.
+                          Expanded(
+                            child: Center(
+                              child: CircleAvatar(
+                                radius: width < 400 ? 22 : 28,
+                                backgroundColor: color.withOpacity(0.15),
+                                child: Icon(
+                                  icon,
+                                  size: width < 400 ? 22 : 28,
+                                  color: color,
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+
+                          // 2. Title: Set to max 1 line with ellipsis
+                          Text(
+                            name,
+                            textAlign: TextAlign.center,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: Theme.of(context).textTheme.bodyMedium
+                                ?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: width < 400 ? 12 : 14,
+                                ),
+                          ),
+
+                          const SizedBox(height: 2),
+
+                          // 3. Subtitle
+                          Text(
+                            '$wordCount كلمة',
+                            style: TextStyle(
+                              fontSize: width < 400 ? 10 : 11,
+                              color: Colors.grey[600],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                );
+              },
+            );
+          },
+        ),
       ),
     );
   }
