@@ -22,7 +22,7 @@ class SalfahApp extends StatelessWidget {
           return MaterialApp(
             title: lang.t('app_title'),
             debugShowCheckedModeBanner: false,
-            locale: lang.locale,
+            locale: const Locale('ar'),
             supportedLocales: const [Locale('en'), Locale('ar')],
             localizationsDelegates: const [
               GlobalMaterialLocalizations.delegate,

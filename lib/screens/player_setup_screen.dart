@@ -142,33 +142,14 @@ class PlayerSetupScreen extends StatelessWidget {
     // If a category was chosen earlier, force it; otherwise pick random as before
     if (selectedCategory != null && data.containsKey(selectedCategory)) {
       final categoryData = data[selectedCategory];
-      bool isCustom =
-          categoryData is Map &&
-          categoryData.containsKey('en') &&
-          categoryData.containsKey('color');
-      String appLang = Provider.of<LanguageProvider>(
-        context,
-        listen: false,
-      ).locale.languageCode;
       final chosen = <String, List<dynamic>>{
-        selectedCategory!: isCustom
-            ? (categoryData['en'] as List<dynamic>?) ?? []
-            : (categoryData[appLang] as List<dynamic>?) ?? [],
+        selectedCategory!: (categoryData['ar'] as List<dynamic>?) ?? [],
       };
       game.startGame(chosen);
     } else {
-      // For all categories, use app language for built-in, 'en' for custom
-      String appLang = Provider.of<LanguageProvider>(
-        context,
-        listen: false,
-      ).locale.languageCode;
       final Map<String, List<dynamic>> allCats = {};
       data.forEach((k, v) {
-        bool isCustom =
-            v is Map && v.containsKey('en') && v.containsKey('color');
-        allCats[k] = isCustom
-            ? (v['en'] as List<dynamic>?) ?? []
-            : (v[appLang] as List<dynamic>?) ?? [];
+        allCats[k] = (v['ar'] as List<dynamic>?) ?? [];
       });
       game.startGame(allCats);
     }

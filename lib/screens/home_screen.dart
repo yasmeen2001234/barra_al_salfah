@@ -90,15 +90,7 @@ class HomeScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 20),
-            // Language toggle
-            TextButton.icon(
-              onPressed: () => lang.toggle(),
-              icon: Icon(Icons.language, color: Colors.white70),
-              label: Text(
-                lang.isArabic ? 'English' : 'العربية',
-                style: const TextStyle(color: Colors.white70),
-              ),
-            ),
+            // ... (language toggle removed)
           ],
         ),
       ),

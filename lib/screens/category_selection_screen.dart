@@ -158,20 +158,10 @@ class _CategorySelectionScreenState extends State<CategorySelectionScreen> {
             }
             final icon = getMaterialIcon(cat["icon"]);
 
-            // Always show 'en' for custom categories, otherwise use app language
-            final langProvider = Provider.of<LanguageProvider>(
-              context,
-              listen: false,
-            );
-            String appLang = langProvider.locale.languageCode;
-
-            bool isCustom =
-                cat is Map && cat.containsKey('en') && cat.containsKey('color');
+            // Always use Arabic
             int wordCount = 0;
-            if (isCustom && cat['en'] is List) {
-              wordCount = (cat['en'] as List).length;
-            } else if (!isCustom && cat[appLang] is List) {
-              wordCount = (cat[appLang] as List).length;
+            if (cat is Map && cat['ar'] is List) {
+              wordCount = (cat['ar'] as List).length;
             }
 
             return InkWell(

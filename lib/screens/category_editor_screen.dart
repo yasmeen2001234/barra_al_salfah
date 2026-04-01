@@ -104,8 +104,7 @@ class _CategoryEditorScreenState extends State<CategoryEditorScreen> {
     if (!merged.containsKey(name)) {
       setState(() {
         custom[name] = {
-          "en": initialWord.isNotEmpty ? [initialWord] : [],
-          "ar": [],
+          "ar": initialWord.isNotEmpty ? [initialWord] : [],
           "color": "#607D8B",
           "icon": "category",
         };
@@ -129,28 +128,29 @@ class _CategoryEditorScreenState extends State<CategoryEditorScreen> {
     if (word.isEmpty) return;
     final categoryData = merged[selectedCategory]!;
     List list;
-    if (categoryData is Map && categoryData.containsKey('en')) {
-      list = categoryData['en'];
+    if (categoryData is Map && categoryData.containsKey('ar')) {
+      list = categoryData['ar'];
     } else if (categoryData is List) {
       list = categoryData;
     } else {
       list = [];
     }
-    if (!list
-        .map((e) => e.toString().toLowerCase())
-        .contains(word.toLowerCase())) {
+    if (!list.contains(word)) {
       setState(() {
         // If custom, update custom; if asset, create/extend custom override
         if (custom.containsKey(selectedCategory)) {
           final customCat = custom[selectedCategory];
-          if (customCat is Map && customCat.containsKey('en')) {
-            customCat['en'].add(word);
+          if (customCat is Map && customCat.containsKey('ar')) {
+            customCat['ar'].add(word);
           }
         } else {
-          // Create override for asset category
+          // Create override for asset category, but preserve all existing words
+          final List<String> newList = List<String>.from(
+            categoryData['ar'] ?? [],
+          );
+          newList.add(word);
           custom[selectedCategory!] = {
-            "en": [word],
-            "ar": [],
+            "ar": newList,
             "color": categoryData["color"] ?? "#607D8B",
             "icon": categoryData["icon"] ?? "category",
           };
@@ -172,17 +172,16 @@ class _CategoryEditorScreenState extends State<CategoryEditorScreen> {
     // Remove word and update merged map
     if (custom.containsKey(selectedCategory)) {
       final customCat = custom[selectedCategory];
-      if (customCat is Map && customCat.containsKey('en')) {
-        (customCat['en'] as List).remove(word);
+      if (customCat is Map && customCat.containsKey('ar')) {
+        (customCat['ar'] as List).remove(word);
       }
     } else {
       // Create override for asset category with removal
       final categoryData = merged[selectedCategory]!;
-      final newList = List<String>.from(categoryData['en'] ?? []);
+      final newList = List<String>.from(categoryData['ar'] ?? []);
       newList.remove(word);
       custom[selectedCategory!] = {
-        "en": newList,
-        "ar": [],
+        "ar": newList,
         "color": categoryData["color"] ?? "#607D8B",
         "icon": categoryData["icon"] ?? "category",
       };
@@ -214,9 +213,8 @@ class _CategoryEditorScreenState extends State<CategoryEditorScreen> {
   List<String> _getWordsList() {
     if (selectedCategory == null) return [];
     final categoryData = merged[selectedCategory];
-    // Always use 'en' for custom and asset categories
-    if (categoryData is Map && categoryData.containsKey('en')) {
-      return List<String>.from(categoryData['en'] ?? []);
+    if (categoryData is Map && categoryData.containsKey('ar')) {
+      return List<String>.from(categoryData['ar'] ?? []);
     } else if (categoryData is List) {
       return List<String>.from(categoryData);
     }
@@ -414,38 +412,7 @@ class _CategoryEditorScreenState extends State<CategoryEditorScreen> {
               ] else
                 Expanded(child: Center(child: Text(lang.t('create_category')))),
 
-              // Done/Next Button with proper spacing
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 20),
-                child: SizedBox(
-                  width: double.infinity,
-                  height: 50,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      backgroundColor: Colors.deepPurple,
-                      foregroundColor: Colors.white,
-                    ),
-                    onPressed: () async {
-                      await _saveCustom();
-                      if (!mounted) return;
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(builder: (_) => const HomeScreen()),
-                      );
-                    },
-                    child: Text(
-                      lang.t('confirm'),
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
+              // ... confirm button removed ...
             ],
           ),
         ),
