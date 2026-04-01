@@ -278,6 +278,18 @@ class _CategoryEditorScreenState extends State<CategoryEditorScreen> {
                       controller: _newCatCtrl,
                       decoration: InputDecoration(
                         hintText: lang.t('new_category'),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide.none,
+                        ),
+                        filled: true,
+                        fillColor:
+                            Theme.of(context).inputDecorationTheme.fillColor ??
+                            Theme.of(context).colorScheme.surface,
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 10,
+                        ),
                       ),
                     ),
                   ),
@@ -331,7 +343,7 @@ class _CategoryEditorScreenState extends State<CategoryEditorScreen> {
                 ),
               ),
 
-              const Divider(),
+              // Removed Divider (yellow underline)
 
               // Selected category details
               if (selectedCategory != null) ...[
@@ -403,6 +415,20 @@ class _CategoryEditorScreenState extends State<CategoryEditorScreen> {
                         controller: _newWordCtrl,
                         decoration: InputDecoration(
                           hintText: lang.t('add_new_word'),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide.none,
+                          ),
+                          filled: true,
+                          fillColor:
+                              Theme.of(
+                                context,
+                              ).inputDecorationTheme.fillColor ??
+                              Theme.of(context).colorScheme.surface,
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 10,
+                          ),
                         ),
                       ),
                     ),

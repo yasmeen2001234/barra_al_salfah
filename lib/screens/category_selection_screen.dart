@@ -130,94 +130,112 @@ class _CategorySelectionScreenState extends State<CategorySelectionScreen> {
         title: Text(lang.t('choose_category')),
         automaticallyImplyLeading: true,
       ),
-      body: Scrollbar(
-        thumbVisibility: true,
-        controller: _gridScrollController,
-        child: GridView.builder(
-          controller: _gridScrollController,
-          padding: const EdgeInsets.all(16),
-          itemCount: names.length,
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 4,
-            crossAxisSpacing: 12,
-            mainAxisSpacing: 12,
-            childAspectRatio: 1.1,
-          ),
-          itemBuilder: (context, i) {
-            final name = names[i];
-            final cat = categories[name]; // JSON map for this category
-
-            final colorValue = cat["color"];
-            Color color;
-            if (colorValue is int) {
-              color = Color(colorValue);
-            } else if (colorValue is String) {
-              color = hexToColor(colorValue);
-            } else {
-              color = Colors.grey;
-            }
-            final icon = getMaterialIcon(cat["icon"]);
-
-            // Always use Arabic
-            int wordCount = 0;
-            if (cat is Map && cat['ar'] is List) {
-              wordCount = (cat['ar'] as List).length;
-            }
-
-            return InkWell(
-              borderRadius: BorderRadius.circular(16),
-              onTap: () {
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => PlayerSetupScreen(selectedCategory: name),
-                  ),
-                );
-              },
-              child: Card(
-                elevation: 4,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(12),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      CircleAvatar(
-                        radius: 28,
-                        backgroundColor: color.withOpacity(0.2),
-                        child: Icon(icon, size: 28, color: color),
-                      ),
-                      const SizedBox(height: 12),
-                      Text(
-                        name,
-                        textAlign: TextAlign.center,
-                        style: Theme.of(context).textTheme.bodyMedium,
-                      ),
-                      const SizedBox(height: 6),
-                      Text(
-                        '$wordCount كلمة',
-                        style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                          color: Theme.of(
+      body: Column(
+        children: [
+          Expanded(
+            child: Scrollbar(
+              thumbVisibility: true,
+              controller: _gridScrollController,
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  int crossAxisCount = 4;
+                  double width = constraints.maxWidth;
+                  if (width < 400) {
+                    crossAxisCount = 2;
+                  } else if (width < 600) {
+                    crossAxisCount = 3;
+                  }
+                  double spacing = width < 400 ? 16 : 20;
+                  return GridView.builder(
+                    controller: _gridScrollController,
+                    padding: EdgeInsets.all(spacing),
+                    itemCount: names.length,
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: crossAxisCount,
+                      crossAxisSpacing: spacing,
+                      mainAxisSpacing: spacing,
+                      childAspectRatio: 1.1,
+                    ),
+                    itemBuilder: (context, i) {
+                      final name = names[i];
+                      final cat = categories[name];
+                      final colorValue = cat["color"];
+                      Color color;
+                      if (colorValue is int) {
+                        color = Color(colorValue);
+                      } else if (colorValue is String) {
+                        color = hexToColor(colorValue);
+                      } else {
+                        color = Colors.grey;
+                      }
+                      final icon = getMaterialIcon(cat["icon"]);
+                      int wordCount = 0;
+                      if (cat is Map && cat['ar'] is List) {
+                        wordCount = (cat['ar'] as List).length;
+                      }
+                      return InkWell(
+                        borderRadius: BorderRadius.circular(16),
+                        onTap: () {
+                          Navigator.pushReplacement(
                             context,
-                          ).colorScheme.onSurface.withOpacity(0.6),
-                          fontSize: 12,
+                            MaterialPageRoute(
+                              builder: (_) =>
+                                  PlayerSetupScreen(selectedCategory: name),
+                            ),
+                          );
+                        },
+                        child: Card(
+                          elevation: 4,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(12),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                CircleAvatar(
+                                  radius: 28,
+                                  backgroundColor: color.withOpacity(0.2),
+                                  child: Icon(icon, size: 28, color: color),
+                                ),
+                                const SizedBox(height: 12),
+                                Text(
+                                  name,
+                                  textAlign: TextAlign.center,
+                                  style: Theme.of(context).textTheme.bodyMedium,
+                                ),
+                                const SizedBox(height: 6),
+                                Text(
+                                  '$wordCount كلمة',
+                                  style: Theme.of(context).textTheme.labelSmall
+                                      ?.copyWith(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .onSurface
+                                            .withOpacity(0.6),
+                                        fontSize: 12,
+                                      ),
+                                ),
+                              ],
+                            ),
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                ),
+                      );
+                    },
+                  );
+                },
               ),
-            );
-          },
-        ),
+            ),
+          ),
+        ],
       ),
     );
-    @override
-    void dispose() {
-      _gridScrollController.dispose();
-      super.dispose();
-    }
+  }
+
+  @override
+  void dispose() {
+    _gridScrollController.dispose();
+    super.dispose();
   }
 }

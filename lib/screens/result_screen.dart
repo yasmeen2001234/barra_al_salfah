@@ -75,167 +75,175 @@ class _ResultScreenState extends State<ResultScreen> {
         title: Text(lang.t("results")),
         automaticallyImplyLeading: false,
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Column(
-            children: [
-              // Reveal the mole section
-              Card(
-                color: Colors.red.shade50,
-                child: Padding(
-                  padding: const EdgeInsets.all(20.0),
-                  child: Column(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 20.0,
-                          vertical: 40.0,
-                        ),
-                        child: SizedBox(
-                          width: double.infinity,
-                          height: 55,
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.deepPurple,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(15),
-                              ),
-                            ),
-                            onPressed: () => _playAgain(),
-                            child: Text(
-                              lang.t('play_again'),
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 18,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 10),
-                      Text(
-                        imposterName,
-                        style: TextStyle(
-                          fontSize: 28,
-                          color: Colors.deepPurple.shade700,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+      body: SafeArea(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            // Impostor result sentence at the TOP
+            Padding(
+              padding: const EdgeInsets.only(
+                top: 24.0,
+                left: 16,
+                right: 16,
+                bottom: 8,
               ),
-
-              const SizedBox(height: 40),
-
-              // Mole guessing section
-              Card(
-                color: Colors.amber.shade50,
+              child: Text(
+                caught
+                    ? '${lang.t('the_imposter_was')} $imposterName.\n${lang.t('win')} ${lang.t('members')}'
+                    : '${lang.t('the_imposter')} $imposterName ${lang.t('win')}',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: caught ? Colors.green : Colors.red,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
+            Expanded(
+              child: SingleChildScrollView(
                 child: Padding(
                   padding: const EdgeInsets.all(20.0),
                   child: Column(
                     children: [
-                      Text(
-                        "$imposterName,  ${lang.t("guess")}!",
-                        style: const TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.deepPurple,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                      const SizedBox(height: 10),
-                      Text(
-                        lang.t("secret_word"),
-                        style: TextStyle(fontSize: 16),
-                      ),
-                      const SizedBox(height: 20),
+                      // Reveal the mole section
                       Card(
-                        color: Colors.deepPurple.shade50,
+                        color: Colors.red.shade50,
                         child: Padding(
-                          padding: const EdgeInsets.all(15.0),
+                          padding: const EdgeInsets.all(20.0),
                           child: Column(
                             children: [
                               Text(
-                                "${lang.t("category")}:",
+                                imposterName,
                                 style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                              const SizedBox(height: 8),
-                              Text(
-                                game.currentCategory ?? "Unknown",
-                                style: const TextStyle(
-                                  fontSize: 18,
+                                  fontSize: 28,
+                                  color: Colors.deepPurple.shade700,
                                   fontWeight: FontWeight.bold,
-                                  color: Colors.deepPurple,
                                 ),
                               ),
                             ],
                           ),
                         ),
                       ),
-                      const SizedBox(height: 30),
-                      // Show 4 options: 1 correct, 3 random wrong
-                      Column(
-                        children: guessOptions.map((option) {
-                          bool isCorrect =
-                              option.toLowerCase() ==
-                              game.secretWord?.toLowerCase();
-                          return ChoiceButton(
-                            option: option,
-                            isCorrect: isCorrect,
-                            hasGuessed: hasGuessed,
-                            onTap: () {
-                              if (!hasGuessed) {
-                                setState(() {
-                                  selectedGuess = option;
-                                  game.submitMoleGuess(option);
-                                  hasGuessed = true;
-                                });
-                              }
-                            },
-                          );
-                        }).toList(),
+                      const SizedBox(height: 40),
+                      // Mole guessing section
+                      Card(
+                        color: Colors.amber.shade50,
+                        child: Padding(
+                          padding: const EdgeInsets.all(20.0),
+                          child: Column(
+                            children: [
+                              Text(
+                                "$imposterName,  ${lang.t("guess")}!",
+                                style: const TextStyle(
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.deepPurple,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                              const SizedBox(height: 10),
+                              Text(
+                                lang.t("secret_word"),
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.deepPurple,
+                                ),
+                              ),
+                              const SizedBox(height: 20),
+                              Card(
+                                color: Colors.deepPurple.shade50,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(15.0),
+                                  child: Column(
+                                    children: [
+                                      Text(
+                                        "${lang.t("category")}:",
+                                        style: TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 8),
+                                      Text(
+                                        game.currentCategory ?? "Unknown",
+                                        style: const TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.deepPurple,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 30),
+                              // Show 4 options: 1 correct, 3 random wrong
+                              Column(
+                                children: guessOptions.map((option) {
+                                  bool isCorrect =
+                                      option.toLowerCase() ==
+                                      game.secretWord?.toLowerCase();
+                                  return ChoiceButton(
+                                    option: option,
+                                    isCorrect: isCorrect,
+                                    hasGuessed: hasGuessed,
+                                    onTap: () {
+                                      if (!hasGuessed) {
+                                        setState(() {
+                                          selectedGuess = option;
+                                          game.submitMoleGuess(option);
+                                          hasGuessed = true;
+                                        });
+                                      }
+                                    },
+                                  );
+                                }).toList(),
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
                     ],
                   ),
                 ),
               ),
-
-              const SizedBox(height: 40),
-
-              // Play again button
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.deepPurple,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.all(15),
-                  ),
-                  onPressed: () {
-                    // 1. Reset the logic first
-                    game.reset();
-
-                    // 2. Then move to the Home Screen
-                    Navigator.pushAndRemoveUntil(
-                      context,
-                      MaterialPageRoute(builder: (_) => const HomeScreen()),
-                      (route) =>
-                          false, // This clears the entire navigation stack
-                    );
-                  },
-                  child: Text(
-                    lang.t("play_again"),
-                    style: const TextStyle(fontSize: 18),
+            ),
+            // Only one Play Again button at the bottom, always visible
+            SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.only(
+                  bottom: 16.0,
+                  left: 16.0,
+                  right: 16.0,
+                ),
+                child: SizedBox(
+                  width: double.infinity,
+                  height: 55,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.deepPurple,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                    ),
+                    onPressed: () {
+                      game.reset();
+                      Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(builder: (_) => const HomeScreen()),
+                        (route) => false,
+                      );
+                    },
+                    child: Text(
+                      lang.t("play_again"),
+                      style: const TextStyle(fontSize: 18),
+                    ),
                   ),
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
