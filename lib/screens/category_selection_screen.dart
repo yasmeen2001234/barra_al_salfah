@@ -30,7 +30,7 @@ class _CategorySelectionScreenState extends State<CategorySelectionScreen> {
 
   IconData getMaterialIcon(String name) {
     switch (name) {
-      case "food":
+      case "fastfood":
         return Icons.fastfood;
       case "place":
         return Icons.place;
@@ -79,12 +79,20 @@ class _CategorySelectionScreenState extends State<CategorySelectionScreen> {
         : {};
     deletedCategories = List<String>.from(custom['__deleted__'] ?? []);
 
+    debugPrint('SharedPreferences custom_categories:');
+    debugPrint(raw ?? 'null');
+    debugPrint('Parsed custom:');
+    debugPrint(custom.toString());
+
     final String response = await rootBundle.loadString(
       'assets/categories.json',
     );
     final Map<String, dynamic> asset = Map<String, dynamic>.from(
       json.decode(response) as Map,
     );
+    debugPrint('Loaded asset categories.json:');
+    debugPrint(asset.toString());
+
     final Map<String, dynamic> merged = {};
 
     asset.forEach((k, v) {
